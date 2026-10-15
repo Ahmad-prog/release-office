@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+# The task list, working copies, notes and logs live in ~/.release-office, not here.
+.ruff_cache/
+# Your own settings. Copy office.config.example.json to start.
+office.config.json
+.idea/

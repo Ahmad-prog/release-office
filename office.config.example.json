@@ -1,0 +1,51 @@
+{
+  "owner": {
+    "name": "The owner",
+    "gitlab_username": "owner",
+    "git_name": "Your Name",
+    "git_email": "owner@example.com"
+  },
+  "jira": {
+    "base_url": "https://your-company.atlassian.net",
+    "sprint": "Sprint 1",
+    "pickup": "all",
+    "project": "PROJ",
+    "board_id": 1,
+    "sprint_field": "customfield_10020",
+    "require_plan": true
+  },
+  "gitlab": {
+    "base_url": "https://gitlab.example.com",
+    "project_id": 0,
+    "target_branch": "staging"
+  },
+  "repo": {
+    "path": "/path/to/your-repo",
+    "worktrees": "~/.release-office/worktrees",
+    "protected_paths": []
+  },
+  "people": {
+    "merger": "maintainer",
+    "merger_name": "the maintainer"
+  },
+  "human_review": {
+    "enabled": false
+  },
+  "agent_review": {
+    "enabled": true
+  },
+  "limits": {
+    "coauthor_loops": 2,
+    "review_rounds": 3,
+    "in_flight": 1
+  },
+  "start_next_when": "handed_to_person",
+  "state_dir": "~/.release-office",
+  "port": 8765,
+  "guard": {
+    "run_commands": [
+      "uv run",
+      "uv sync"
+    ]
+  }
+}

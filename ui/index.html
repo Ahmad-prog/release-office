@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release Office Control Desk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Saira+Stencil+One&display=swap">
+<style>
+/* Layout: the same drawing-sheet look as the floor plan, used as a working desk.
+   A strip for who is working now, a board of lanes by who holds each ticket,
+   then the hub's messages beside the owner's controls. Redline marks what needs attention. */
+:root {
+  --paper: #E9EEF3; --sheet: #F4F7FA; --ink: #12304F; --ink-2: #4B6480;
+  --rule: #BFCBD8; --hover: #DCE5EE;
+  --redline: #C6381F; --redline-wash: #F0D6CF;
+  --pass: #1B7A54; --pass-wash: #D0E7DD; --on-ink: #F4F7FA;
+  --display: "Saira Stencil One", "Barlow Condensed", "Arial Narrow", sans-serif;
+  --label: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0C2540; --sheet: #11304F; --ink: #E3EDF8; --ink-2: #9DB6D0;
+    --rule: #2C5480; --hover: #1A4370;
+    --redline: #FF8C69; --redline-wash: #453B4A;
+    --pass: #5ED3A1; --pass-wash: #1B4553; --on-ink: #0C2540;
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ol, ul { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+button, input, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+
+.desk { max-width: 1560px; margin-inline: auto; padding-inline: clamp(16px, 3vw, 40px); padding-block: 20px 56px; display: grid; gap: 22px; }
+.desk > * { min-width: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+.top h1 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: .03em; text-transform: uppercase; margin-top: 4px; }
+.top-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.badge { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; border: 1.5px solid var(--ink); padding: 3px 9px; border-radius: 2px; }
+.badge.demo { border-color: var(--redline); color: var(--redline); }
+.notice { color: var(--ink-2); font-size: 15px; max-width: 80ch; }
+.notice.down { color: var(--redline); }
+
+.btn { appearance: none; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font-family: var(--label); font-weight: 600; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; padding: 6px 14px; border-radius: 2px; cursor: pointer; text-decoration: none; display: inline-block; transition: background .15s, border-color .15s; }
+.btn:hover:not(:disabled) { background: var(--hover); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.primary { background: var(--ink); color: var(--on-ink); }
+.btn.primary:hover:not(:disabled) { background: var(--redline); border-color: var(--redline); }
+.btn.quiet { border-color: var(--rule); }
+.btn.small { font-size: 14px; padding: 3px 9px; }
+.btn:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2.5px solid var(--redline); outline-offset: 2px; }
+
+/* who is working now */
+.now { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; border: 2px solid var(--ink); background: var(--sheet); padding: 12px 16px; }
+.now svg { width: 38px; height: 38px; }
+.now .who { font-family: var(--label); font-weight: 700; font-size: 24px; letter-spacing: .04em; text-transform: uppercase; line-height: 1.1; }
+.now .what { color: var(--ink-2); overflow-wrap: anywhere; }
+.now .since { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.mk-body { fill: var(--ink); stroke: var(--ink); stroke-width: 1.5; }
+.mk-glyph { fill: var(--sheet); }
+.mk-ring { fill: none; stroke: var(--redline); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.now.busy .mk-body { fill: var(--redline); stroke: var(--redline); }
+.now.busy .mk-ring { animation: ping 1.4s ease-out infinite; }
+@keyframes ping { 0% { opacity: .9; transform: scale(.75); } 100% { opacity: 0; transform: scale(1.7); } }
+@media (prefers-reduced-motion: reduce) { .now.busy .mk-ring { animation: none; opacity: .8; } }
+
+/* the board */
+.board-scroll { overflow-x: auto; border: 2px solid var(--ink); background: var(--sheet); }
+.board { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); min-width: 1200px; }
+.lane { border-left: 1px solid var(--rule); min-width: 0; display: grid; grid-template-rows: auto 1fr; }
+.lane:first-child { border-left: 0; }
+.lane-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1.5px solid var(--ink); }
+.lane-head h2 { font-family: var(--label); font-weight: 700; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; }
+.lane-head small { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); font-weight: 400; margin-top: 2px; }
+.lane-head b { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.lane.alert .lane-head b, .lane.alert .lane-head h2 { color: var(--redline); }
+.cards { display: grid; gap: 10px; padding: 10px; align-content: start; min-height: 120px; }
+.empty { color: var(--ink-2); font-size: 14px; padding: 4px 2px; }
+.card { border: 1.5px solid var(--ink); background: var(--paper); padding: 9px 10px 10px; display: grid; gap: 6px; min-width: 0; }
+.card.alert { border-color: var(--redline); background: var(--redline-wash); }
+.card.done { border-color: var(--pass); background: var(--pass-wash); }
+.card .key { font-family: var(--mono); font-weight: 500; font-size: 13.5px; letter-spacing: .03em; }
+.card .sum { font-size: 14.5px; line-height: 1.3; overflow-wrap: anywhere; }
+.card .state { font-family: var(--label); font-weight: 600; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+.card .meta { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+.card .say { font-size: 14px; overflow-wrap: anywhere; }
+.card .next { font-family: var(--mono); font-size: 12.5px; background: var(--sheet); border: 1px dashed var(--ink-2); padding: 5px 7px; overflow-wrap: anywhere; }
+.card textarea { width: 100%; min-height: 62px; resize: vertical; background: var(--sheet); border: 1.5px solid var(--ink); padding: 6px 8px; font-size: 14.5px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* messages and the owner's controls */
+.split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.sec { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.sec + .sec { margin-top: 22px; }
+.sec h2 { font-family: var(--label); font-weight: 700; font-size: 24px; letter-spacing: .05em; text-transform: uppercase; line-height: 1.1; border-top: 2px solid var(--ink); padding-top: 12px; }
+.events { display: grid; max-height: 520px; overflow-y: auto; }
+.events li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 2px 10px; padding: 8px 4px; border-bottom: 1px solid var(--rule); }
+.events time { font-family: var(--mono); font-size: 12px; color: var(--ink-2); padding-top: 2px; }
+.events .route { font-family: var(--label); font-weight: 600; font-size: 14.5px; letter-spacing: .07em; text-transform: uppercase; }
+.events .text { grid-column: 2; font-size: 14.5px; color: var(--ink-2); overflow-wrap: anywhere; white-space: pre-line; }
+.events li.alert .route, .events li.alert .text { color: var(--redline); }
+.field { display: flex; gap: 8px; }
+.field input[type="text"] { flex: 1; min-width: 0; background: var(--sheet); border: 1.5px solid var(--ink); padding: 6px 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.answer { white-space: pre-line; background: var(--sheet); border: 1.5px solid var(--ink); padding: 10px 12px; font-size: 15px; overflow-wrap: anywhere; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--ink-2); }
+.plan li { padding: 5px 0 5px 15px; position: relative; font-size: 14.5px; overflow-wrap: anywhere; }
+.plan li::before { content: ""; position: absolute; left: 0; top: .8em; width: 8px; height: 1.5px; background: var(--ink-2); }
+.pretend li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 14.5px; }
+
+/* what is waiting on the owner: open a concern, read its context, resolve it */
+.needs { border: 2px solid var(--redline); background: var(--sheet); }
+.needs-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 12px 16px; border-bottom: 1.5px solid var(--redline); }
+.needs-head h2 { font-family: var(--label); font-weight: 700; font-size: 24px; letter-spacing: .05em; text-transform: uppercase; color: var(--redline); line-height: 1.1; }
+.needs-head b { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1; color: var(--redline); font-variant-numeric: tabular-nums; }
+.needs-head p { color: var(--ink-2); font-size: 15px; flex: 1 1 320px; }
+.concern { border-bottom: 1px solid var(--rule); }
+.concern:last-child { border-bottom: 0; }
+.concern summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 11px 16px; cursor: pointer; list-style: none; }
+.concern summary::-webkit-details-marker { display: none; }
+.concern summary::before { content: "+"; font-family: var(--mono); font-weight: 500; width: 12px; color: var(--redline); }
+.concern[open] summary::before { content: "\2212"; }
+.concern summary:hover { background: var(--hover); }
+.concern summary:focus-visible { outline: 2.5px solid var(--redline); outline-offset: -2px; }
+.concern[open] summary { border-bottom: 1px solid var(--rule); }
+.concern .kind { font-family: var(--label); font-weight: 600; font-size: 15.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--redline); }
+.concern .ckey { font-family: var(--mono); font-weight: 500; font-size: 13.5px; }
+.concern .csum { flex: 1 1 240px; min-width: 0; overflow-wrap: anywhere; }
+.cbody { display: grid; gap: 12px; padding: 14px 16px 18px; max-width: 110ch; }
+.cbody .ask { font-size: 17px; font-weight: 500; overflow-wrap: anywhere; }
+.cbody .sent { color: var(--pass); font-weight: 500; }
+.said { display: grid; gap: 6px; border-left: 2px solid var(--rule); padding-left: 12px; overflow-wrap: anywhere; }
+.said b { font-family: var(--label); font-weight: 600; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; margin-right: 6px; }
+.ctx { display: grid; gap: 6px; border: 1.5px solid var(--ink); background: var(--paper); padding: 12px 14px; max-height: 460px; overflow-y: auto; }
+.ctx h4 { font-family: var(--label); font-weight: 700; font-size: 15px; letter-spacing: .07em; text-transform: uppercase; margin: 8px 0 0; }
+.ctx h4:first-child { margin-top: 0; }
+.ctx pre { margin: 0; font-family: var(--body); font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.fld { display: grid; gap: 5px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.fld textarea { width: 100%; min-height: 78px; resize: vertical; background: var(--paper); border: 1.5px solid var(--ink); padding: 8px 10px; font-family: var(--body); font-size: 15.5px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="desk">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">Control desk · <span id="sprint">sprint</span></p>
+      <h1>Release Office</h1>
+    </div>
+    <div class="top-ctl">
+      <span class="badge" id="mode">connecting</span>
+      <button class="btn primary" id="toggle" type="button" disabled>Start</button>
+      <button class="btn" id="step" type="button" hidden>Run one step</button>
+      <button class="btn quiet" id="preview" type="button" hidden>Preview the step</button>
+      <a class="btn quiet" href="/plan" target="_blank" rel="noopener">Floor plan</a>
+    </div>
+  </header>
+
+  <p class="notice" id="notice">Connecting to the backend.</p>
+
+  <section class="now" id="now" aria-live="polite">
+    <svg viewBox="-17 -17 34 34" aria-hidden="true"><circle class="mk-ring" r="15"/><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></svg>
+    <div><p class="who" id="now-who">Nobody is working</p><p class="what" id="now-what">Press Start to open the office.</p></div>
+    <p class="since" id="now-since"></p>
+  </section>
+
+  <section class="needs" id="needs" aria-label="Waiting on you" hidden>
+    <div class="needs-head">
+      <h2>Needs you</h2><b id="needs-count">0</b>
+      <p>Open a concern to read it, see the whole context, ask for more, and give your resolution. It goes to the manager, and from the manager to the developer.</p>
+    </div>
+    <div id="needs-list"></div>
+  </section>
+
+  <section aria-label="Tickets by who holds them">
+    <div class="board-scroll"><div class="board" id="board"></div></div>
+  </section>
+
+  <div class="split">
+    <div>
+      <section class="sec">
+        <h2>Messages through the manager</h2>
+        <ol class="events" id="events"><li><time></time><span class="route">Nothing yet</span></li></ol>
+      </section>
+    </div>
+    <div>
+      <section class="sec">
+        <h2>Ask the manager</h2>
+        <form class="field" id="ask-form">
+          <input type="text" id="ask-input" placeholder="How many are with the maintainer?" aria-label="Question for the manager">
+          <button class="btn" type="submit">Ask</button>
+        </form>
+        <div class="chips" id="chips"></div>
+        <p class="answer" id="ask-answer" hidden></p>
+      </section>
+      <section class="sec" id="plan-box" hidden>
+        <h2>If you run one step now</h2>
+        <ul class="plan" id="plan-list"></ul>
+      </section>
+      <section class="sec">
+        <h2>Add a ticket</h2>
+        <form class="field" id="add-form">
+          <input type="text" id="add-input" placeholder="PROJ-101" aria-label="Ticket key">
+          <button class="btn" type="submit">Add</button>
+        </form>
+        <label class="check"><input type="checkbox" id="add-adopt"> Its branch already exists and is mine</label>
+        <label class="check"><input type="checkbox" id="add-unplanned"> Start it as it is, without the ticket check</label>
+      </section>
+      <section class="sec" id="upcoming-box" hidden>
+        <h2>In Progress in Jira</h2>
+        <p class="empty" id="upcoming-hint"></p>
+        <ul class="pretend" id="upcoming-list"></ul>
+      </section>
+      <section class="sec" id="pretend-box" hidden>
+        <h2>Pretend to be the owner</h2>
+        <ul class="pretend" id="pretend-list"></ul>
+      </section>
+    </div>
+  </div>
+
+</div>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const link = u => (/^https:\/\//.test(u || "") ? u : "");
+  const clock = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); };
+  const ROLE = { developer: "Developer", coauthor: "Co-author", reviewer: "Reviewer", manager: "Manager", owner: "The owner", human_reviewer: "the human reviewer" };
+
+  const KIND = { blocked: "Question from the developer", needs_owner: "Stopped for your decision", needs_plan: "Ticket needs fixing" };
+
+  let S = null;
+  let drawn = "";
+  let needsDrawn = "";
+  const drafts = {};
+  const open = new Set();
+  const seen = new Set();
+  const contexts = {};
+
+  async function post(name, body) {
+    const r = await fetch("/api/" + name, { method: "POST", headers: { "Content-Type": "application/json", "X-Office": "1" }, body: JSON.stringify(body || {}) });
+    return r.json();
+  }
+
+  async function load() {
+    try {
+      const r = await fetch("/api/state", { cache: "no-store" });
+      S = await r.json();
+      render();
+    } catch (e) {
+      $("#notice").textContent = "The backend is not answering. Start it with: python3 server.py --mode demo";
+      $("#notice").classList.add("down");
+      $("#mode").textContent = "offline";
+    }
+  }
+
+  function name(who) {
+    if (!S) return who;
+    if (who === S.people.merger) return S.people.merger_name;
+    return ROLE[who] || who || "";
+  }
+
+  function render() {
+    const demo = S.mode === "demo";
+    $("#sprint").textContent = S.sprint;
+    $("#mode").textContent = demo ? "Demo · pretend data" : S.mode === "auto" ? "Automatic · real Jira and GitLab" : "Manual · real Jira and GitLab";
+    $("#mode").classList.toggle("demo", demo);
+    $("#notice").classList.remove("down");
+    $("#notice").textContent = demo
+      ? "Everything on this page is pretend. Nothing is sent to Jira or GitLab, and no agent is started."
+      : S.mode === "auto"
+        ? "Live. Press Start and the manager works on its own: it starts each agent's session behind the guard and writes to Jira and GitLab. Close the office to stop new work from starting."
+        : "You start each role's skill yourself. The manager moves only when you press Run one step, and each step can be previewed first.";
+    const toggle = $("#toggle");
+    toggle.disabled = false;
+    toggle.textContent = S.running ? "Close the office" : "Start";
+    $("#step").hidden = $("#preview").hidden = !S.stepping;
+    renderNow();
+    renderNeeds();
+    renderBoard();
+    renderEvents();
+    renderChips();
+    renderPretend();
+    renderUpcoming();
+  }
+
+  function renderNow() {
+    const a = S.active;
+    const waiting = S.tickets.filter(t => t.next);
+    $("#now").classList.toggle("busy", !!a);
+    if (a) {
+      $("#now-who").textContent = (ROLE[a.role] || a.role) + " · " + a.ticket;
+      $("#now-what").textContent = a.last || "Working";
+      $("#now-since").textContent = "since " + clock(a.since);
+    } else if (waiting.length) {
+      $("#now-who").textContent = "Next up: " + waiting[0].next;
+      $("#now-what").textContent = S.stepping ? "Run that skill in a Claude Code session. It reports back here when it is done." : "Waiting for the next session to start.";
+      $("#now-since").textContent = "";
+    } else {
+      $("#now-who").textContent = "Nobody is working";
+      $("#now-what").textContent = S.running ? "The office is open and waiting for a ticket to move to In Progress." : "Press Start to open the office.";
+      $("#now-since").textContent = "";
+    }
+  }
+
+  function mrLine(t) {
+    if (!t.mr_iid) return "";
+    const url = link(t.mr_url);
+    const id = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">!${esc(t.mr_iid)}</a>` : "!" + esc(t.mr_iid);
+    const m = t.mr || {};
+    const bits = [];
+    if (m.pipeline) bits.push("pipeline " + esc(m.pipeline));
+    if (m.approved_by && m.approved_by.length) bits.push("approved by " + m.approved_by.map(u => esc(name(u))).join(", "));
+    if (m.people_open) bits.push(esc(m.people_open) + " thread(s) open");
+    return `<p class="meta">${id}${bits.length ? " · " + bits.join(" · ") : ""}</p>`;
+  }
+
+  function card(t) {
+    const demo = S.mode === "demo";
+    const url = link(t.url);
+    const key = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(t.key)}</a>` : esc(t.key);
+    const parts = [`<p class="key">${key}</p>`, `<p class="sum">${esc(t.summary)}</p>`, `<p class="state">${esc(t.label)}</p>`, mrLine(t)];
+    if (t.state === "co_review") parts.push(`<p class="meta">Co-author round ${esc(t.rounds.coauthor)}</p>`);
+    if (t.state === "in_review" || t.state === "fixing") parts.push(`<p class="meta">Review round ${esc(t.rounds.review)}</p>`);
+    if (t.running) parts.push(`<p class="meta">${esc(ROLE[t.running] || t.running)} is working</p>`);
+    if (t.next) parts.push(`<p class="next">${esc(t.next)}</p><div class="row"><button class="btn small quiet" type="button" data-act="copy" data-text="${esc(t.next)}">Copy</button></div>`);
+    if (t.lane === "owner") {
+      const short = t.state === "blocked" ? (t.question || {}).text : t.state === "needs_plan" ? (t.plan_problems || [])[0] : t.error;
+      parts.push(`<p class="say">${esc(short || "")}</p><div class="row"><button class="btn small primary" type="button" data-act="open" data-key="${esc(t.key)}">Open</button></div>`);
+    }
+    if (demo && t.lane === "human_reviewer") parts.push(`<div class="row"><button class="btn small quiet" type="button" data-act="demo" data-do="comment" data-key="${esc(t.key)}">Comment as the human reviewer</button><button class="btn small" type="button" data-act="demo" data-do="approve" data-key="${esc(t.key)}">Approve</button></div>`);
+    if (demo && t.lane === "merger") parts.push(`<div class="row"><button class="btn small quiet" type="button" data-act="demo" data-do="pushback" data-key="${esc(t.key)}">Push back</button><button class="btn small" type="button" data-act="demo" data-do="merge" data-key="${esc(t.key)}">Merge</button></div>`);
+    const tone = t.lane === "owner" ? " alert" : t.lane === "staging" ? " done" : "";
+    return `<article class="card${tone}">${parts.join("")}</article>`;
+  }
+
+  function concern(t) {
+    const demo = S.mode === "demo";
+    const key = esc(t.key);
+    const url = link(t.url);
+    const body = [];
+    if (t.state === "blocked") {
+      body.push(`<p class="ask">${esc((t.question || {}).text || "")}</p>`);
+      const said = (t.exchange || []).slice(1);
+      if (said.length) body.push(`<ol class="said">${said.map(x => `<li><b>${x.from === "owner" ? "You" : "Developer"}</b>${esc(x.text)}</li>`).join("")}</ol>`);
+    } else if (t.state === "needs_plan") {
+      body.push(`<p class="ask">${esc(t.error)}</p><ul class="plan">${(t.plan_problems || []).map(p => `<li>${esc(p)}</li>`).join("")}</ul>`);
+    } else {
+      body.push(`<p class="ask">${esc(t.error)}</p>`);
+    }
+    const ctx = contexts[t.key];
+    if (ctx) body.push(`<div class="ctx" tabindex="0">${ctx.map(p => `<h4>${esc(p.title)}</h4><pre>${esc(p.text)}</pre>`).join("") || "<pre>Nothing more is recorded for this ticket.</pre>"}</div>`);
+    const jira = url ? `<a class="btn small quiet" href="${esc(url)}" target="_blank" rel="noopener">Open in Jira</a>` : "";
+    body.push(`<div class="row"><button class="btn small" type="button" data-act="context" data-key="${key}">${ctx ? "Refresh the context" : "Show the whole context"}</button>${jira}</div>`);
+    if (t.state === "blocked" && t.answer) {
+      body.push(`<p class="sent">Your resolution is with the manager. It goes to the developer on the next step.</p>`);
+    } else if (t.state === "blocked" && t.followup) {
+      body.push(`<p class="sent">Your question is with the manager. It goes to the developer on the next step, and the answer comes back here.</p>`);
+    } else if (t.state === "blocked") {
+      const design = (t.question || {}).design ? " checked" : "";
+      body.push(`<label class="fld">Your resolution<textarea data-draft="answer:${key}"></textarea></label><label class="check"><input type="checkbox" id="record-${key}"${design}> This changes a core design decision. Write it on the Jira ticket.</label><div class="row"><button class="btn small primary" type="button" data-act="answer" data-key="${key}">Send to the manager</button></div>`);
+      body.push(`<label class="fld">Or ask the developer for more first<textarea data-draft="more:${key}"></textarea></label><div class="row"><button class="btn small" type="button" data-act="followup" data-key="${key}">Ask through the manager</button></div>`);
+    } else if (t.state === "needs_owner") {
+      body.push(`<label class="fld">Your decision, for whoever picks it up again<textarea data-draft="note:${key}"></textarea></label><div class="row"><button class="btn small primary" type="button" data-act="resume" data-key="${key}">Put it back in the flow</button></div>`);
+    } else {
+      body.push(`<p class="sent">Fix the description in Jira. The manager looks again on every step and starts the ticket once it passes.</p>`);
+      const fix = demo ? `<button class="btn small primary" type="button" data-act="demo" data-do="fix" data-key="${key}">Fix the ticket</button>` : "";
+      body.push(`<div class="row">${fix}<button class="btn small quiet" type="button" data-act="unplanned" data-key="${key}">Start it as it is</button></div>`);
+    }
+    return `<details class="concern" data-key="${key}"${open.has(t.key) ? " open" : ""}><summary><span class="kind">${esc(KIND[t.state] || t.label)}</span><span class="ckey">${key}</span><span class="csum">${esc(t.summary)}</span></summary><div class="cbody">${body.join("")}</div></details>`;
+  }
+
+  function restoreDrafts(focused) {
+    document.querySelectorAll("textarea[data-draft]").forEach(area => {
+      area.value = drafts[area.dataset.draft] || "";
+      if (area.dataset.draft === focused) area.focus();
+    });
+  }
+
+  function renderNeeds() {
+    const mine = S.tickets.filter(t => t.lane === "owner");
+    $("#needs").hidden = !mine.length;
+    $("#needs-count").textContent = mine.length;
+    Object.keys(contexts).forEach(k => { if (!mine.some(t => t.key === k)) delete contexts[k]; });
+    mine.forEach(t => { if (!seen.has(t.key)) { seen.add(t.key); if (mine.length === 1) open.add(t.key); } });
+    const fresh = JSON.stringify([mine, [...open], Object.keys(contexts).map(k => [k, contexts[k].length]), S.mode]);
+    if (fresh === needsDrawn) return;
+    // Do not redraw under someone who is typing a resolution.
+    const typing = document.activeElement;
+    if (needsDrawn && typing && typing.tagName === "TEXTAREA" && typing.closest("#needs-list")) return;
+    needsDrawn = fresh;
+    $("#needs-list").innerHTML = mine.map(concern).join("");
+    restoreDrafts(null);
+  }
+
+  function renderBoard() {
+    const fresh = JSON.stringify([S.tickets, S.mode, S.people]);
+    if (fresh === drawn) return;
+    drawn = fresh;
+    // The reviewer's desk shows only while the reviewer agent is in use, or a ticket is still on it.
+    const desk = S.agent_review || S.tickets.some(t => t.lane === "reviewer");
+    const lanes = [
+      ["owner", "Needs you", "The owner"],
+      ["developer", "Developer’s desk", desk ? "agent, with the co-author" : "agent, with the co-author who checks the scope"],
+      ["reviewer", "Reviewer’s desk", "agent"],
+      ["human_reviewer", "Human reviewer", !S.human_review ? "approval" : S.agent_review ? "second review · temporary step" : "reviews the merge request"],
+      ["merger", S.people.merger_name, "merges our merge requests"],
+      ["staging", "On staging", "merged and deployed"],
+    ].filter(lane => (lane[0] !== "reviewer" || desk) && (lane[0] !== "human_reviewer" || S.human_review || S.tickets.some(t => t.lane === "human_reviewer")));
+    $("#board").style.gridTemplateColumns = `repeat(${lanes.length}, minmax(200px, 1fr))`;
+    $("#board").innerHTML = lanes.map(([id, title, sub]) => {
+      const mine = S.tickets.filter(t => t.lane === id);
+      const alert = id === "owner" && mine.length ? " alert" : "";
+      return `<section class="lane${alert}"><div class="lane-head"><h2>${esc(title)}<small>${esc(sub)}</small></h2><b>${mine.length}</b></div><div class="cards">${mine.map(card).join("") || '<p class="empty">Nothing here.</p>'}</div></section>`;
+    }).join("");
+  }
+
+  function renderEvents() {
+    if (!S.events.length) return;
+    $("#events").innerHTML = S.events.map(e => {
+      const route = [name(e.from), e.to ? "to " + name(e.to) : ""].filter(Boolean).join(" ");
+      return `<li class="${e.attention ? "alert" : ""}"><time>${esc(clock(e.at))}</time><span class="route">${esc(route)}${e.ticket ? " · " + esc(e.ticket) : ""}</span><span class="text">${esc(e.text)}</span></li>`;
+    }).join("");
+  }
+
+  function renderChips() {
+    const box = $("#chips");
+    if (box.childElementCount) return;
+    const asks = ["Who is working?", "What is with the human reviewer?", "How many are with " + S.people.merger_name + "?", "What needs me?"];
+    box.innerHTML = asks.map(q => `<button class="btn small quiet" type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("");
+  }
+
+  function renderPretend() {
+    const box = $("#pretend-box");
+    box.hidden = !(S.mode === "demo" && S.demo.length);
+    $("#pretend-list").innerHTML = S.demo.map(t => `<li><span><b>${esc(t.key)}</b> ${esc(t.summary)}</span><button class="btn small" type="button" data-move="${esc(t.key)}">Move to In Progress</button></li>`).join("");
+  }
+
+  function renderUpcoming() {
+    const list = S.upcoming || [];
+    $("#upcoming-box").hidden = !list.length;
+    $("#upcoming-hint").textContent = S.running ? "The office takes these next, one at a time." : "Start takes these, one at a time.";
+    $("#upcoming-list").innerHTML = list.map(t => {
+      const verdict = t.faults ? `Not in the office's shape: ${esc(t.faults)} thing(s) to fix. The manager will turn it away and list here what to fix.` : "Ready. It starts as soon as there is room.";
+      return `<li><span><b>${esc(t.key)}</b> ${esc(t.summary)}<br><small>${verdict}</small></span></li>`;
+    }).join("");
+  }
+
+  async function ask(question) {
+    if (!question.trim()) return;
+    const out = await post("ask", { question });
+    const box = $("#ask-answer");
+    box.hidden = false;
+    box.textContent = out.answer || out.error || "";
+  }
+
+  async function step(dry) {
+    const out = await post("tick", { dry });
+    if (dry) {
+      $("#plan-box").hidden = false;
+      const lines = out.log && out.log.length ? out.log : ["Nothing would change."];
+      $("#plan-list").innerHTML = lines.map(l => `<li>${esc(l)}</li>`).join("");
+    } else {
+      $("#plan-box").hidden = true;
+    }
+    load();
+  }
+
+  document.addEventListener("input", e => {
+    if (e.target.dataset && e.target.dataset.draft) drafts[e.target.dataset.draft] = e.target.value;
+  });
+
+  document.addEventListener("click", async e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    if (b.dataset.ask) { $("#ask-input").value = b.dataset.ask; return ask(b.dataset.ask); }
+    if (b.dataset.move) { await post("demo", { action: "in_progress", ticket: b.dataset.move }); return load(); }
+    const act = b.dataset.act, key = b.dataset.key;
+    if (!act) return;
+    if (act === "copy") {
+      try { await navigator.clipboard.writeText(b.dataset.text); b.textContent = "Copied"; } catch (err) { b.textContent = "Select and copy it"; }
+      return;
+    }
+    if (act === "open") {
+      open.add(key);
+      needsDrawn = "";
+      renderNeeds();
+      const found = [...document.querySelectorAll("details.concern")].find(d => d.dataset.key === key);
+      if (found) found.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (act === "context") {
+      // The manager gathers what the developer recorded about this ticket.
+      const r = await fetch("/api/context?ticket=" + encodeURIComponent(key), { cache: "no-store" });
+      contexts[key] = (await r.json()).parts || [];
+      open.add(key);
+      needsDrawn = "";
+      return renderNeeds();
+    }
+    const take = name => { const text = (drafts[name + ":" + key] || "").trim(); delete drafts[name + ":" + key]; return text; };
+    if (act === "answer") {
+      if (!(drafts["answer:" + key] || "").trim()) return;
+      const record = document.getElementById("record-" + key);
+      await post("answer", { ticket: key, text: take("answer"), record: !!(record && record.checked) });
+    }
+    if (act === "followup") {
+      if (!(drafts["more:" + key] || "").trim()) return;
+      await post("followup", { ticket: key, text: take("more") });
+    }
+    if (act === "resume") await post("resume", { ticket: key, state: "", note: take("note") });
+    if (act === "unplanned") await post("resume", { ticket: key, state: "", unplanned: true });
+    if (act === "demo") await post("demo", { action: b.dataset.do, ticket: key });
+    drawn = "";
+    needsDrawn = "";
+    load();
+  });
+
+  // Remember which concerns are open, so a redraw does not close them.
+  document.addEventListener("toggle", e => {
+    const d = e.target;
+    if (!d.classList || !d.classList.contains("concern")) return;
+    if (d.open) open.add(d.dataset.key); else open.delete(d.dataset.key);
+  }, true);
+
+  $("#toggle").addEventListener("click", async () => { await post(S && S.running ? "stop" : "start"); load(); });
+  $("#step").addEventListener("click", () => step(false));
+  $("#preview").addEventListener("click", () => step(true));
+  $("#ask-form").addEventListener("submit", e => { e.preventDefault(); ask($("#ask-input").value); });
+  $("#add-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const key = $("#add-input").value.trim().toUpperCase();
+    if (!key) return;
+    await post("add", { ticket: key, adopt: $("#add-adopt").checked, unplanned: $("#add-unplanned").checked });
+    $("#add-input").value = "";
+    load();
+  });
+
+  load();
+  setInterval(load, 1500);
+})();
+</script>
+</body>
+</html>

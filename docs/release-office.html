@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Release Office Floor Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Saira+Stencil+One&display=swap">
+<style>
+/* Layout: an architect's drawing sheet. The plan of the office sits beside a step sheet;
+   the sprint wall is drawn as an elevation below; a room schedule, general notes and a
+   title block close the sheet. One accent, the reviewer's redline, marks whatever is live. */
+:root {
+  --paper: #E9EEF3;
+  --sheet: #F4F7FA;
+  --ink: #12304F;
+  --ink-2: #4B6480;
+  --rule: #BFCBD8;
+  --grid: #DAE2EA;
+  --hover: #DCE5EE;
+  --redline: #C6381F;
+  --redline-wash: #F0D6CF;
+  --pass: #1B7A54;
+  --pass-wash: #D0E7DD;
+  --on-ink: #F4F7FA;
+  --display: "Saira Stencil One", "Barlow Condensed", "Arial Narrow", sans-serif;
+  --label: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0C2540; --sheet: #11304F; --ink: #E3EDF8; --ink-2: #9DB6D0;
+    --rule: #2C5480; --grid: #173B61; --hover: #1A4370;
+    --redline: #FF8C69; --redline-wash: #453B4A;
+    --pass: #5ED3A1; --pass-wash: #1B4553; --on-ink: #0C2540;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0C2540; --sheet: #11304F; --ink: #E3EDF8; --ink-2: #9DB6D0;
+  --rule: #2C5480; --grid: #173B61; --hover: #1A4370;
+  --redline: #FF8C69; --redline-wash: #453B4A;
+  --pass: #5ED3A1; --pass-wash: #1B4553; --on-ink: #0C2540;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ol, ul, dl, dt, dd { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+button { font: inherit; color: inherit; }
+
+.sheet { max-width: 1520px; margin-inline: auto; padding-inline: clamp(16px, 3vw, 40px); padding-block: 22px 56px; display: grid; gap: 30px; }
+.sheet > * { min-width: 0; }
+
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+
+/* ---------- header ---------- */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+.top h1 { font-family: var(--display); font-weight: 400; font-size: clamp(32px, 4.4vw, 54px); line-height: 1; letter-spacing: .03em; text-transform: uppercase; text-wrap: balance; margin-top: 4px; }
+.lede { max-width: 62ch; color: var(--ink-2); font-size: 17px; margin-top: 8px; }
+
+/* ---------- buttons ---------- */
+.btn { appearance: none; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font-family: var(--label); font-weight: 600; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; padding: 7px 16px; border-radius: 2px; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+.btn:hover:not(:disabled) { background: var(--hover); }
+.btn:disabled { opacity: .35; cursor: default; }
+.btn.primary { background: var(--ink); color: var(--on-ink); }
+.btn.primary:hover:not(:disabled) { background: var(--redline); border-color: var(--redline); }
+.btn.quiet { border-color: var(--rule); font-size: 15px; }
+.btn:focus-visible, .seg:focus-visible { outline: 2.5px solid var(--redline); outline-offset: 2px; }
+
+/* ---------- stage ---------- */
+.stage { display: grid; gap: 18px 28px; grid-template-columns: minmax(0, 1.9fr) minmax(300px, 1fr); grid-template-areas: "plan controls" "plan narr"; grid-template-rows: auto 1fr; align-items: start; }
+.controls { grid-area: controls; display: grid; gap: 10px; min-width: 0; }
+.plan-frame { grid-area: plan; min-width: 0; }
+.narr { grid-area: narr; min-width: 0; display: grid; gap: 14px; align-content: start; border-top: 2px solid var(--ink); padding-top: 16px; }
+@media (max-width: 980px) {
+  .stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "plan" "narr"; grid-template-rows: auto; }
+}
+
+.ctl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
+.count { font-family: var(--mono); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 10px; }
+.count b { font-family: var(--display); font-weight: 400; font-size: 44px; line-height: 1; color: var(--ink); letter-spacing: .02em; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.scale { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); }
+.seg { appearance: none; background: none; border: 0; margin: 0; padding: 6px 0 4px; width: 100%; cursor: pointer; display: grid; gap: 5px; justify-items: start; color: var(--ink-2); }
+.seg i { display: block; width: 100%; height: 11px; border: 1.5px solid var(--ink); border-right-width: 0; }
+.scale li:last-child .seg i { border-right-width: 1.5px; }
+.seg span { font-family: var(--mono); font-size: 11.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+.seg:hover i { background: var(--hover); }
+.seg.done i { background: var(--ink); }
+.seg.done:hover i { background: var(--ink-2); }
+.seg.now i, .seg.now:hover i { background: var(--redline); }
+.seg.now span { color: var(--redline); font-weight: 500; }
+.keys { font-size: 14px; color: var(--ink-2); }
+
+.tag { justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--redline); border: 1.5px solid var(--redline); padding: 2px 8px; border-radius: 2px; }
+.narr h2 { font-family: var(--label); font-weight: 700; font-size: clamp(27px, 2.5vw, 38px); line-height: 1.04; letter-spacing: .02em; text-transform: uppercase; text-wrap: balance; }
+.narr .body { font-size: 17.5px; max-width: 60ch; }
+
+.legs { display: grid; border-top: 1px solid var(--rule); }
+.legs li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; padding: 9px 8px; border-bottom: 1px solid var(--rule); transition: background .2s; }
+.legs .ix { font-family: var(--mono); font-size: 12px; color: var(--ink-2); padding-top: 3px; }
+.legs .head { font-family: var(--label); font-weight: 600; font-size: 16px; letter-spacing: .07em; text-transform: uppercase; }
+.legs .say { grid-column: 2; font-size: 16px; color: var(--ink-2); }
+.legs li.now { background: var(--redline-wash); }
+.legs li.now .ix { color: var(--redline); }
+.legs li.now .say { color: var(--ink); }
+
+.checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.checks li { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--pass); background: var(--pass-wash); border: 1.5px solid var(--pass); padding: 3px 9px; border-radius: 2px; }
+.checks li::before { content: "\2713\00a0"; }
+
+/* ---------- plan ---------- */
+.plan-wrap { position: relative; border: 2px solid var(--ink); background: var(--sheet); }
+.plan-scroll { overflow-x: auto; }
+#plan { display: block; width: 100%; min-width: 660px; height: auto; }
+
+.bg { fill: var(--sheet); }
+.g-fine { fill: none; stroke: var(--grid); stroke-width: .8; }
+.g-major { fill: none; stroke: var(--rule); stroke-width: .8; opacity: .7; }
+.wall { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: square; stroke-linejoin: miter; }
+.p-line { stroke: var(--ink); stroke-width: 2.2; }
+.poche { fill: url(#pp); stroke: var(--ink); stroke-width: 6; }
+.door { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.lock { fill: var(--ink); }
+.furn { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.5; transition: fill .25s, stroke .25s; }
+.furn-detail { fill: var(--ink); }
+.hub-in { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 3 4; }
+.hub.is-active { fill: var(--redline-wash); stroke: var(--redline); stroke-width: 2.5; }
+
+.t-room { font-family: var(--label); font-weight: 600; font-size: 19px; letter-spacing: 1.2px; fill: var(--ink); }
+.t-sub { font-family: var(--mono); font-size: 11.5px; letter-spacing: .6px; fill: var(--ink-2); }
+.t-who { font-family: var(--label); font-weight: 600; font-size: 14.5px; letter-spacing: 1px; fill: var(--ink); transition: fill .25s; }
+.t-who.is-active { fill: var(--redline); }
+.t-fix { font-family: var(--mono); font-size: 10.5px; letter-spacing: .5px; fill: var(--ink); }
+.t-no { font-family: var(--mono); font-size: 11px; font-weight: 500; fill: var(--on-ink); }
+.no-box { fill: var(--ink); }
+.t-mr { font-family: var(--label); font-weight: 700; font-size: 26px; letter-spacing: 1px; fill: var(--ink); }
+.t-state { font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .5px; fill: var(--ink); }
+.t-foot { font-family: var(--mono); font-size: 10.5px; letter-spacing: 1px; fill: var(--ink-2); }
+
+.hit { fill: transparent; cursor: pointer; outline: none; transition: fill .25s, stroke .25s; }
+.hit:hover { fill: var(--hover); }
+.hit.is-active { fill: var(--redline-wash); }
+.hit.soft.is-active { fill: transparent; }
+.hit.soft:hover { fill: var(--hover); }
+.hit:focus-visible { stroke: var(--redline); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.furn-hit { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.5; }
+.furn-hit:hover { fill: var(--hover); }
+.furn-hit.is-active { fill: var(--redline-wash); stroke: var(--redline); }
+.hatch-box { stroke-width: 2; }
+.hatch-box[data-state="empty"] { stroke-dasharray: 5 4; }
+.hatch-box[data-state="threads"] { fill: var(--redline-wash); stroke: var(--redline); }
+.hatch-box[data-state="approved"], .hatch-box[data-state="merged"] { fill: var(--pass-wash); stroke: var(--pass); }
+
+.cell { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.2; transition: fill .3s; }
+.cell.past { fill: var(--rule); }
+.cell.now { fill: var(--redline); }
+
+.route { fill: none; stroke: var(--ink-2); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 7; }
+.route.work { stroke-width: 1.1; stroke-dasharray: 7 5; opacity: .7; }
+.route.live { stroke: var(--redline); stroke-width: 2.6; stroke-dasharray: 2 8; opacity: 1; animation: march 1s linear infinite; }
+.route.live.rev { animation-direction: reverse; }
+@keyframes march { to { stroke-dashoffset: -20; } }
+
+.mk-body { fill: var(--ink); stroke: var(--ink); stroke-width: 1.5; transition: fill .25s, stroke .25s; }
+.mk-glyph { fill: var(--sheet); transition: fill .25s; }
+.mk-ring { fill: none; stroke: var(--redline); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.mk.is-active .mk-body { fill: var(--redline); stroke: var(--redline); }
+.mk.is-speaking .mk-ring { animation: ping 1.4s ease-out infinite; }
+@keyframes ping { 0% { opacity: .9; transform: scale(.75); } 100% { opacity: 0; transform: scale(2); } }
+.mk-ghost .mk-body { fill: var(--sheet); stroke-dasharray: 3 2.5; }
+.mk-ghost .mk-glyph { fill: var(--ink); }
+.mk-ghost.is-active .mk-body { fill: var(--redline-wash); stroke: var(--redline); }
+.mk-ghost.is-active .mk-glyph { fill: var(--redline); }
+
+.slip rect { fill: var(--sheet); stroke: var(--redline); stroke-width: 2; }
+.slip path { fill: none; stroke: var(--redline); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.slip { transition: opacity .25s; }
+.slip.gone { opacity: 0; }
+
+.walls, .doors, #routes, #slips, .decor { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .route.live, .mk.is-speaking .mk-ring { animation: none; }
+  .mk.is-speaking .mk-ring { opacity: .8; }
+  .ticket { transition: none; }
+}
+
+/* role card shown on hover */
+.pop { position: absolute; z-index: 5; width: min(330px, calc(100% - 16px)); background: var(--sheet); border: 2px solid var(--ink); padding: 14px 16px 16px; box-shadow: 6px 6px 0 var(--rule); pointer-events: none; display: grid; gap: 6px; }
+@media (max-width: 720px) {
+  .pop { position: static; width: auto; border-width: 2px 0 0; box-shadow: none; }
+}
+
+/* readout under the plan */
+.readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid var(--ink); border-top: 0; background: var(--sheet); }
+.readout > div { padding: 9px 14px 11px; border-left: 1px solid var(--ink); min-width: 0; display: grid; gap: 2px; align-content: start; }
+.readout > div:first-child { border-left: 0; }
+.readout dt { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.readout dd { font-family: var(--label); font-weight: 600; font-size: 22px; letter-spacing: .04em; text-transform: uppercase; line-height: 1.1; }
+.readout dd small { display: block; font-family: var(--body); font-weight: 400; font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--ink-2); line-height: 1.3; margin-top: 3px; min-height: 1.3em; }
+@media (max-width: 620px) {
+  .readout { grid-template-columns: minmax(0, 1fr); }
+  .readout > div { border-left: 0; border-top: 1px solid var(--ink); }
+  .readout > div:first-child { border-top: 0; }
+}
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-top: 12px; font-size: 14px; color: var(--ink-2); }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.legend svg { width: 24px; height: 24px; flex: none; }
+.legend svg.ln { width: 44px; height: 14px; }
+
+/* ---------- section heads ---------- */
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 12px; }
+.sec-head h2 { font-family: var(--label); font-weight: 700; font-size: 28px; letter-spacing: .05em; text-transform: uppercase; line-height: 1.1; }
+.sec-head .meta { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; color: var(--ink-2); }
+
+/* ---------- elevation: the sprint board ---------- */
+.board-scroll { overflow-x: auto; border: 2px solid var(--ink); background: var(--sheet); }
+.board { min-width: 840px; }
+.lane { position: relative; height: 74px; background: repeating-linear-gradient(to right, transparent 0 calc(100% / 7 - 1px), var(--rule) calc(100% / 7 - 1px) calc(100% / 7)); }
+.ticket { position: absolute; top: 12px; left: 0; width: calc(100% / 7); padding-inline: 9px; transform: translateX(calc(var(--col, 0) * 100%)); transition: transform .7s cubic-bezier(.6, .05, .25, 1); }
+.t-card { background: var(--redline); color: var(--on-ink); padding: 7px 10px 8px; border-radius: 2px; display: grid; gap: 1px; box-shadow: 4px 4px 0 var(--rule); }
+.t-card b { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .04em; }
+.t-card span { font-size: 12.5px; }
+.cols { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); }
+.cols li { padding: 10px 10px 14px; border-left: 1px solid var(--rule); display: grid; gap: 4px; align-content: start; min-width: 0; transition: background .3s; }
+.cols li:first-child { border-left: 0; }
+.cols .cn { font-family: var(--label); font-weight: 700; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; transition: color .3s; }
+.cols .cw { font-size: 13.5px; color: var(--ink-2); line-height: 1.35; }
+.cols li.now { background: var(--redline-wash); }
+.cols li.now .cn { color: var(--redline); }
+.cols li.now .cw { color: var(--ink); }
+
+/* ---------- room schedule ---------- */
+.sched-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 32px; }
+.sched-grid + .sub { margin-top: 30px; }
+.sub { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 12px; }
+@media (max-width: 900px) { .sched-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sched-grid { grid-template-columns: minmax(0, 1fr); } }
+.entry { display: grid; gap: 6px; align-content: start; padding-top: 12px; border-top: 1.5px solid var(--ink); min-width: 0; }
+.entry .no, .pop .no { justify-self: start; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .06em; background: var(--ink); color: var(--on-ink); padding: 1px 7px; border-radius: 2px; }
+.entry h3, .pop h3 { font-family: var(--label); font-weight: 700; font-size: 23px; letter-spacing: .05em; text-transform: uppercase; line-height: 1.1; }
+.entry .who, .pop .who { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.entry ul, .pop ul { display: grid; gap: 5px; margin-top: 4px; font-size: 15.5px; line-height: 1.4; }
+.entry li, .pop li { padding-left: 15px; position: relative; }
+.entry li::before, .pop li::before { content: ""; position: absolute; left: 0; top: .66em; width: 8px; height: 1.5px; background: var(--ink-2); }
+
+/* ---------- notes + title block ---------- */
+.foot { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); gap: 32px; align-items: start; }
+@media (max-width: 860px) { .foot { grid-template-columns: minmax(0, 1fr); } }
+.notes ol { counter-reset: n; display: grid; gap: 9px; max-width: 72ch; }
+.notes li { counter-increment: n; display: grid; grid-template-columns: 30px minmax(0, 1fr); font-size: 16px; }
+.notes li::before { content: counter(n) "."; font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding-top: 2px; }
+.titleblock { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 2px solid var(--ink); background: var(--sheet); }
+.titleblock > div { padding: 8px 12px 10px; border-bottom: 1px solid var(--ink); border-right: 1px solid var(--ink); min-width: 0; display: grid; gap: 1px; }
+.titleblock > div:nth-child(2n) { border-right: 0; }
+.titleblock > div.wide { grid-column: 1 / -1; border-right: 0; }
+.titleblock > div:nth-last-child(-n+2) { border-bottom: 0; }
+.titleblock span { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.titleblock b { font-family: var(--label); font-weight: 600; font-size: 19px; letter-spacing: .05em; text-transform: uppercase; line-height: 1.15; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">Sheet A-01 · Plan and elevation</p>
+      <h1>Release Office</h1>
+      <p class="lede">How one sprint ticket travels from In Progress to staging, and who handles it on the way.</p>
+    </div>
+    <button class="btn quiet" id="fs" type="button">Full screen</button>
+  </header>
+
+  <main class="stage">
+
+    <section class="controls" aria-label="Step controls">
+      <div class="ctl-row">
+        <p class="count" id="count"><b>00</b>Overview</p>
+        <div class="btns">
+          <button class="btn" id="prev" type="button" disabled>Back</button>
+          <button class="btn primary" id="next" type="button">Next</button>
+          <button class="btn quiet" id="replay" type="button">Replay</button>
+        </div>
+      </div>
+      <ol class="scale" id="scale" aria-label="Steps"></ol>
+      <p class="keys">The arrow keys step too. Hover or tap a room to see who sits there.</p>
+    </section>
+
+    <section class="plan-frame" aria-label="Floor plan">
+      <div class="plan-wrap" id="planWrap">
+        <div class="plan-scroll">
+          <svg id="plan" viewBox="0 0 1000 620" role="group" aria-labelledby="plan-t plan-d">
+            <title id="plan-t">Floor plan of the release office</title>
+            <desc id="plan-d">The manager’s desk stands in the middle of the hall. The owner’s office and the merge desk are along the top wall, either side of the sprint board. The developer’s room and the reviewer’s room are along the bottom, with a solid wall between them that holds the merge request hatch.</desc>
+            <defs>
+              <pattern id="pg" width="20" height="20" patternUnits="userSpaceOnUse"><path class="g-fine" d="M20 0H0V20"/></pattern>
+              <pattern id="pG" width="100" height="100" patternUnits="userSpaceOnUse"><path class="g-major" d="M100 0H0V100"/></pattern>
+              <pattern id="pp" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="p-line" x1="0" y1="0" x2="0" y2="7"/></pattern>
+            </defs>
+            <rect class="bg" width="1000" height="620"/>
+            <rect width="1000" height="620" fill="url(#pg)"/>
+            <rect width="1000" height="620" fill="url(#pG)"/>
+
+            <!-- rooms -->
+            <g>
+              <rect class="hit" data-role="owner" x="33" y="33" width="234" height="194" tabindex="0" role="button" aria-label="Owner’s office: the owner"/>
+              <rect class="hit" data-role="merger" x="733" y="33" width="234" height="194" tabindex="0" role="button" aria-label="Merge desk: the maintainer"/>
+              <rect class="hit" data-role="developer" x="33" y="393" width="434" height="194" tabindex="0" role="button" aria-label="Developer’s room"/>
+              <rect class="hit" data-role="reviewer" x="533" y="393" width="434" height="194" tabindex="0" role="button" aria-label="Reviewer’s room"/>
+            </g>
+
+            <!-- walls -->
+            <g class="walls">
+              <path class="wall" d="M30 285V30H970V285M970 335V590H30V335"/>
+              <path class="wall" d="M270 30V230M30 230H190M240 230H270"/>
+              <path class="wall" d="M730 30V230M730 230H760M810 230H970"/>
+              <path class="wall" d="M30 390H330M380 390H470"/>
+              <path class="wall" d="M530 390H620M670 390H970"/>
+              <rect class="poche" x="470" y="390" width="60" height="200"/>
+            </g>
+
+            <!-- doors -->
+            <g class="doors">
+              <path class="door" d="M190 230V180A50 50 0 0 1 240 230"/>
+              <path class="door" d="M810 230V180A50 50 0 0 0 760 230"/>
+              <path class="door" d="M330 390V440A50 50 0 0 0 380 390"/>
+              <path class="door" d="M670 390V440A50 50 0 0 1 620 390"/>
+              <path class="door" d="M970 285H920A50 50 0 0 0 970 335"/>
+              <path class="door" d="M30 285H38V335H30"/>
+              <rect class="lock" x="45" y="306" width="13" height="10" rx="1.5"/>
+              <path class="door" d="M48 306v-3.5a3.5 3.5 0 0 1 7 0V306"/>
+              <path class="door" d="M942 310H994M986 304l8 6l-8 6"/>
+            </g>
+
+            <!-- fixtures and desks that answer to hover -->
+            <g>
+              <rect class="hit soft" data-role="manager" x="388" y="186" width="224" height="172" rx="4" tabindex="0" role="button" aria-label="Manager’s desk"/>
+              <rect class="hit soft" data-role="board" x="368" y="33" width="264" height="70" tabindex="0" role="button" aria-label="Sprint board"/>
+              <rect class="hit soft" data-role="locked" x="33" y="262" width="200" height="100" tabindex="0" role="button" aria-label="Protected paths, locked"/>
+              <rect class="hit soft" data-role="staging" x="800" y="262" width="167" height="100" tabindex="0" role="button" aria-label="Staging door"/>
+              <rect class="hit soft" data-role="coauthor" x="328" y="488" width="100" height="66" rx="4" tabindex="0" role="button" aria-label="Co-author"/>
+              <rect class="hit furn-hit" data-role="bench" x="52" y="538" width="124" height="30" rx="2" tabindex="0" role="button" aria-label="Test bench"/>
+              <rect class="hit furn-hit" data-role="file" x="824" y="538" width="124" height="30" rx="2" tabindex="0" role="button" aria-label="Ticket file"/>
+              <rect class="hit furn-hit hatch-box" id="hatch" data-role="mr" data-state="empty" x="458" y="448" width="84" height="84" rx="3" tabindex="0" role="button" aria-label="Merge request hatch"/>
+            </g>
+
+            <!-- routes -->
+            <g id="routes">
+              <path id="r_owner_mgr" class="route" d="M127 185L200 216L215 232V252L453 292"/>
+              <path id="r_merger_mgr" class="route" d="M873 185L800 216L785 232V252L547 292"/>
+              <path id="r_dev_mgr" class="route" d="M292 460L345 412L355 392V368L456 321"/>
+              <path id="r_rev_mgr" class="route" d="M708 460L655 412L645 392V368L544 321"/>
+              <path id="r_dev_mr" class="route work" d="M296 470L454 482"/>
+              <path id="r_rev_mr" class="route work" d="M704 470L546 482"/>
+              <path id="r_dev_bench" class="route work" d="M264 476L204 488L158 536"/>
+              <path id="r_rev_file" class="route work" d="M736 476L796 488L842 536"/>
+              <path id="r_dev_co" class="route work" d="M294 478Q340 474 364 500"/>
+              <path id="r_merge_staging" class="route work" d="M788 242L794 264L935 304L966 310"/>
+            </g>
+
+            <!-- furniture, labels, people -->
+            <g class="decor">
+              <rect class="furn" x="56" y="112" width="112" height="40" rx="2"/><rect class="furn-detail" x="92" y="117" width="40" height="5"/>
+              <rect class="furn" x="832" y="112" width="112" height="40" rx="2"/><rect class="furn-detail" x="868" y="117" width="40" height="5"/>
+              <rect class="furn" x="215" y="492" width="130" height="40" rx="2"/><rect class="furn-detail" x="258" y="521" width="44" height="5"/>
+              <rect class="furn" x="655" y="492" width="130" height="40" rx="2"/><rect class="furn-detail" x="698" y="521" width="44" height="5"/>
+              <circle class="furn hub" data-lab="manager" cx="500" cy="300" r="46"/><circle class="hub-in" cx="500" cy="300" r="34"/>
+
+              <g id="cells">
+                <rect class="cell now" x="380" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="414.29" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="448.57" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="482.86" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="517.14" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="551.43" y="37" width="34.29" height="16"/>
+                <rect class="cell" x="585.71" y="37" width="34.29" height="16"/>
+              </g>
+              <text class="t-who" data-lab="board" x="500" y="76" text-anchor="middle">SPRINT BOARD</text>
+              <text class="t-sub" x="500" y="92" text-anchor="middle">JIRA · ELEVATION A</text>
+
+              <rect class="no-box" x="46" y="44" width="34" height="18" rx="2"/><text class="t-no" x="63" y="57" text-anchor="middle">101</text>
+              <text class="t-room" x="88" y="59.5">OWNER’S OFFICE</text>
+              <text class="t-sub" x="46" y="81">THE OWNER · PERSON</text>
+
+              <rect class="no-box" x="746" y="44" width="34" height="18" rx="2"/><text class="t-no" x="763" y="57" text-anchor="middle">105</text>
+              <text class="t-room" x="788" y="59.5">MERGE DESK</text>
+              <text class="t-sub" x="746" y="81">THE MAINTAINER · PERSON</text>
+
+              <rect class="no-box" x="414" y="190" width="34" height="18" rx="2"/><text class="t-no" x="431" y="203" text-anchor="middle">102</text>
+              <text class="t-room" x="456" y="205.5">MANAGER’S DESK</text>
+              <text class="t-sub" x="500" y="227" text-anchor="middle">AGENT · EVERY MESSAGE PASSES HERE</text>
+
+              <rect class="no-box" x="46" y="404" width="34" height="18" rx="2"/><text class="t-no" x="63" y="417" text-anchor="middle">103</text>
+              <text class="t-room" x="88" y="419.5">DEVELOPER’S ROOM</text>
+              <text class="t-sub" x="46" y="441">TWO AGENTS · BUILD AND FIX</text>
+              <text class="t-who" data-lab="developer" x="262" y="468" text-anchor="end">DEVELOPER</text>
+              <text class="t-who" data-lab="coauthor" x="372" y="545" text-anchor="middle">CO-AUTHOR</text>
+              <text class="t-fix" x="114" y="557" text-anchor="middle">TEST BENCH</text>
+
+              <rect class="no-box" x="700" y="404" width="34" height="18" rx="2"/><text class="t-no" x="717" y="417" text-anchor="middle">104</text>
+              <text class="t-room" x="742" y="419.5">REVIEWER’S ROOM</text>
+              <text class="t-sub" x="700" y="441">ONE AGENT · CLEAN SESSION</text>
+              <text class="t-who" data-lab="reviewer" x="738" y="468">REVIEWER</text>
+              <text class="t-fix" x="886" y="557" text-anchor="middle">TICKET FILE</text>
+
+              <text class="t-mr" x="500" y="484" text-anchor="middle">MR</text>
+              <text class="t-state" id="hatch-state" x="500" y="505" text-anchor="middle">NO MR YET</text>
+              <text class="t-sub" x="500" y="522" text-anchor="middle">GITLAB</text>
+
+              <text class="t-who" x="66" y="309">PROTECTED</text>
+              <text class="t-sub" x="66" y="325">LOCKED · OUT OF SCOPE</text>
+              <text class="t-who" data-lab="staging" x="908" y="334" text-anchor="end">TO STAGING</text>
+              <text class="t-sub" x="908" y="350" text-anchor="end">AFTER THE MERGE</text>
+
+              <text class="t-foot" x="30" y="611">PLAN · NOT TO SCALE</text>
+              <text class="t-foot" x="970" y="611" text-anchor="end">PROTECTED PATHS STAY LOCKED</text>
+
+              <g class="mk" data-mk="owner" transform="translate(112 178)"><circle class="mk-ring" r="15"/><circle class="mk-body" r="12"/><circle class="mk-glyph" cy="-3.2" r="3.6"/><path class="mk-glyph" d="M-6.8 7.2a6.8 6 0 0 1 13.6 0z"/></g>
+              <g class="mk" data-mk="merger" transform="translate(888 178)"><circle class="mk-ring" r="15"/><circle class="mk-body" r="12"/><circle class="mk-glyph" cy="-3.2" r="3.6"/><path class="mk-glyph" d="M-6.8 7.2a6.8 6 0 0 1 13.6 0z"/></g>
+              <g class="mk" data-mk="manager" transform="translate(500 300) scale(1.35)"><circle class="mk-ring" r="15"/><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g>
+              <g class="mk" data-mk="developer" transform="translate(280 470)"><circle class="mk-ring" r="15"/><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g>
+              <g class="mk mk-ghost" data-mk="coauthor" transform="translate(372 512)"><circle class="mk-ring" r="15"/><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g>
+              <g class="mk" data-mk="reviewer" transform="translate(720 470)"><circle class="mk-ring" r="15"/><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g>
+            </g>
+
+            <g id="slips"></g>
+          </svg>
+        </div>
+        <aside class="pop" id="pop" hidden></aside>
+      </div>
+
+      <dl class="readout">
+        <div><dt>Jira board</dt><dd id="ro-board">To Do<small>Waiting for the owner to choose it</small></dd></div>
+        <div><dt>Merge request</dt><dd id="ro-mr">None yet<small></small></dd></div>
+        <div><dt>Manager’s list</dt><dd id="ro-list">Empty<small></small></dd></div>
+      </dl>
+
+      <ul class="legend" aria-label="Legend">
+        <li><svg viewBox="-17 -17 34 34" aria-hidden="true"><g class="mk"><circle class="mk-body" r="12"/><circle class="mk-glyph" cy="-3.2" r="3.6"/><path class="mk-glyph" d="M-6.8 7.2a6.8 6 0 0 1 13.6 0z"/></g></svg>A person</li>
+        <li><svg viewBox="-17 -17 34 34" aria-hidden="true"><g class="mk"><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g></svg>An agent</li>
+        <li><svg viewBox="-17 -17 34 34" aria-hidden="true"><g class="mk mk-ghost"><rect class="mk-body" x="-9.5" y="-9.5" width="19" height="19" rx="2.5" transform="rotate(45)"/><circle class="mk-glyph" r="3"/></g></svg>An agent with a clean context</li>
+        <li><svg class="ln" viewBox="0 0 46 14" aria-hidden="true"><path class="route" d="M3 7H43"/></svg>A message, always by way of the manager</li>
+        <li><svg class="ln" viewBox="0 0 46 14" aria-hidden="true"><path class="route work" d="M3 7H43"/></svg>Work on a shared thing</li>
+        <li><svg class="ln" viewBox="0 0 46 14" aria-hidden="true"><rect class="poche" x="3" y="2" width="40" height="10" style="stroke-width:1.5"/></svg>Solid wall, no door</li>
+      </ul>
+    </section>
+
+    <section class="narr" aria-live="polite" aria-label="Current step">
+      <p class="tag" id="tag" hidden></p>
+      <h2 id="s-title">The office at rest</h2>
+      <p class="body" id="s-body">Four agents and two people carry one sprint ticket from In Progress to staging. The manager sits in the middle. Every message crosses that desk, so the developer and the reviewer never speak to each other.</p>
+      <ol class="legs" id="legs" hidden></ol>
+      <ul class="checks" id="checks" hidden>
+        <li>Approved</li>
+        <li>Pipeline passed</li>
+        <li>Marked ready</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <section class="elev" aria-labelledby="elev-h">
+    <div class="sec-head">
+      <p class="eyebrow">Elevation A</p>
+      <h2 id="elev-h">Sprint board</h2>
+      <p class="meta">Sprint 1 · 24 Sep to 30 Oct 2026 · Jira</p>
+    </div>
+    <div class="board-scroll" id="boardScroll">
+      <div class="board">
+        <div class="lane">
+          <div class="ticket" id="ticket" style="--col:0"><div class="t-card"><b>PROJ ticket</b><span>Sprint 1</span></div></div>
+        </div>
+        <ol class="cols" id="cols">
+          <li class="now"><span class="cn">To Do</span><span class="cw">Tickets wait here.</span></li>
+          <li><span class="cn">Elaboration</span><span class="cw">The owner settles what is wanted.</span></li>
+          <li><span class="cn">In Progress</span><span class="cw">The owner moves it here. The office starts.</span></li>
+          <li><span class="cn">Completed</span><span class="cw">The developer moves it here when the merge request opens.</span></li>
+          <li><span class="cn">Reviewed</span><span class="cw">The manager moves it here after its three checks.</span></li>
+          <li><span class="cn">Deployed to Staging</span><span class="cw">The manager moves it here when the maintainer merges. Merged is deployed.</span></li>
+          <li><span class="cn">Done</span><span class="cw">After the production release. Outside this office.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sched" aria-labelledby="sched-h">
+    <div class="sec-head">
+      <p class="eyebrow">Schedule</p>
+      <h2 id="sched-h">Who sits where</h2>
+    </div>
+    <p class="sub">Rooms</p>
+    <div class="sched-grid">
+      <article class="entry" id="role-owner">
+        <p class="no">101</p>
+        <h3>Owner’s office</h3>
+        <p class="who">The owner · person</p>
+        <ul>
+          <li>Chooses the work. He moves a ticket from To Do, through Elaboration, to In Progress.</li>
+          <li>Answers what the developer cannot settle, and takes any cross-team discussion or change to a protected path himself.</li>
+          <li>Hears from the manager when a ticket is blocked and when it reaches staging.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-manager">
+        <p class="no">102</p>
+        <h3>Manager’s desk</h3>
+        <p class="who">Agent · the hub</p>
+        <ul>
+          <li>Keeps the list of tickets given to the developer and where each one stands.</li>
+          <li>Carries every message between the developer and the reviewer, and can ask either for a report at any time.</li>
+          <li>Checks the merge request itself: approved, pipeline passed, marked ready.</li>
+          <li>Moves the ticket to Reviewed, assigns the merge to the maintainer, and starts the next ticket. On the merge it moves the ticket to Deployed to Staging.</li>
+          <li>Answers the owner at any time: who is working, what is with the reviewer, and how many of the office’s own merge requests are waiting for the maintainer.</li>
+          <li>Writes no code and reviews none.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-developer">
+        <p class="no">103</p>
+        <h3>Developer</h3>
+        <p class="who">Agent · on the owner’s token for now</p>
+        <ul>
+          <li>Gathers the requirements, writes the code, runs the tests and the checks the ticket names.</li>
+          <li>Opens the merge request and moves the ticket to Completed.</li>
+          <li>Fixes review threads and replies on each one. It never resolves, approves or merges.</li>
+          <li>Reports progress, completion and blockers to the manager, and to no one else.</li>
+          <li>Its session stays open until the merge, so a late comment finds it with the full context.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-coauthor">
+        <p class="no">103</p>
+        <h3>Co-author</h3>
+        <p class="who">Agent · clean context, posts nothing</p>
+        <ul>
+          <li>Sits at the developer’s desk with no memory of how the change was written.</li>
+          <li>Reviews the local change against the ticket before the merge request opens.</li>
+          <li>Hands its findings to the developer. It posts nothing to GitLab.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-reviewer">
+        <p class="no">104</p>
+        <h3>Reviewer</h3>
+        <p class="who">Agent · separate clean session</p>
+        <ul>
+          <li>A separate session with a clean context. Local for now, so it works on the owner’s token.</li>
+          <li>Acts only when the manager passes it a message.</li>
+          <li>Looks closely and makes sure the merge request maps exactly to the Jira ticket. Every requirement and every decision must match.</li>
+          <li>Posts each mismatch or finding as a thread.</li>
+          <li>Checks the fixes, resolves the threads it has verified, then approves.</li>
+          <li>Never pushes code and never merges.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-merger">
+        <p class="no">105</p>
+        <h3>Merge desk</h3>
+        <p class="who">The maintainer · person</p>
+        <ul>
+          <li>Merges the approved request into staging once the manager assigns it to him.</li>
+          <li>May comment or push back first. The manager passes that to the developer.</li>
+          <li>The merge is his decision. No agent can make it.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="sub">Fixtures</p>
+    <div class="sched-grid">
+      <article class="entry" id="role-board">
+        <p class="no">A</p>
+        <h3>Sprint board</h3>
+        <p class="who">Jira · Sprint 1</p>
+        <ul>
+          <li>Seven columns, from To Do to Done.</li>
+          <li>The owner’s move to In Progress is what starts the office.</li>
+          <li>The developer moves the ticket to Completed. The manager moves it to Reviewed and to Deployed to Staging.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-mr">
+        <p class="no">B</p>
+        <h3>MR hatch</h3>
+        <p class="who">GitLab · the merge request</p>
+        <ul>
+          <li>Set in the solid wall between the two rooms.</li>
+          <li>The developer pushes code in from one side.</li>
+          <li>The reviewer writes threads, resolves them and approves from the other.</li>
+          <li>It is the only thing both rooms touch.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-bench">
+        <p class="no">C</p>
+        <h3>Test bench</h3>
+        <p class="who">Tests · checks · pipeline</p>
+        <ul>
+          <li>The project’s own tests.</li>
+          <li>The wider checks the ticket names, such as a smoke run.</li>
+          <li>The pipeline runs the checks again on the merge request.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-file">
+        <p class="no">D</p>
+        <h3>Ticket file</h3>
+        <p class="who">Jira · the ticket itself</p>
+        <ul>
+          <li>The reviewer reads the ticket for itself and checks the merge request against it, requirement by requirement and decision by decision.</li>
+          <li>The owner’s answers to the developer’s questions are written here too.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-locked">
+        <p class="no">E</p>
+        <h3>Protected paths</h3>
+        <p class="who">Locked</p>
+        <ul>
+          <li>The paths the repo marks as protected are outside this office.</li>
+          <li>When a ticket needs a change there, the owner makes it himself.</li>
+        </ul>
+      </article>
+      <article class="entry" id="role-staging">
+        <p class="no">F</p>
+        <h3>Staging door</h3>
+        <p class="who">Way out</p>
+        <ul>
+          <li>Merged work leaves here. Merged into staging is deployed to staging.</li>
+          <li>QA on staging then catches any drift in columns or records.</li>
+          <li>Done comes later, with the production release.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="foot">
+    <div class="notes">
+      <div class="sec-head">
+        <p class="eyebrow">Sheet notes</p>
+        <h2>General notes</h2>
+      </div>
+      <ol>
+        <li>The owner starts every ticket. The office works only on tickets he has moved to In Progress.</li>
+        <li>Every message crosses the manager’s desk. No door joins the developer’s room to the reviewer’s.</li>
+        <li>The merge request is the one thing both rooms touch. The developer pushes into it and the reviewer writes on it.</li>
+        <li>Local for now. Every role runs on the owner’s machine with his own GitLab and Jira tokens. A separate reviewer token is the later step.</li>
+        <li>The reviewer approves only when the merge request maps exactly to the Jira ticket, with every requirement and every decision matching.</li>
+        <li>The reviewer’s approval counts toward the merge. The maintainer, a person, performs it.</li>
+        <li>The manager checks three things itself before asking for a merge: approved, pipeline passed, marked ready. GitLab itself refuses a merge while any thread is open.</li>
+        <li>Anyone may comment on the merge request. The manager passes each comment to the developer.</li>
+        <li>The developer’s session stays open until the merge. The next ticket starts as soon as one is handed over for merge.</li>
+        <li>Protected paths stay locked, and a change there is the owner’s own work.</li>
+        <li>Merged into staging is deployed to staging. QA on staging then checks for drift in columns and records.</li>
+        <li>A local control page will start the office and show who is working. Its backend runs the Claude CLI, and it lists only the office’s own merge requests.</li>
+      </ol>
+    </div>
+    <div class="titleblock" aria-label="Title block">
+      <div class="wide"><span>Project</span><b>Release agents, proof of concept</b></div>
+      <div class="wide"><span>Sprint</span><b>Sprint 1 · 24 Sep to 30 Oct 2026</b></div>
+      <div><span>Scope</span><b>One repository</b></div>
+      <div><span>Owner</span><b>The owner</b></div>
+      <div><span>Runs</span><b>Locally · Claude CLI</b></div>
+      <div><span>Tokens</span><b>The owner’s own, for now</b></div>
+      <div><span>Sheet</span><b>A-01 · not to scale</b></div>
+      <div><span>Drawn</span><b>9 Oct 2026</b></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  const MR_LABEL = { empty: "NO MR YET", open: "OPEN", threads: "THREADS", resolved: "RESOLVED", approved: "APPROVED", merged: "MERGED" };
+
+  // Each step holds the state the office is in once the step is done.
+  // legs: r = route id, d = 1 along the drawn path / -1 against it, a = who acts, b = who or what receives.
+  const STEPS = [
+    { title: "The office at rest",
+      body: "Four agents and two people carry one sprint ticket from In Progress to staging. The manager sits in the middle. Every message crosses that desk, so the developer and the reviewer never speak to each other.",
+      col: 0, mr: "empty", board: ["To Do", "Waiting for the owner to choose it"], mrText: ["None yet", ""], list: ["Empty", ""],
+      actors: [], legs: [] },
+
+    { title: "The owner picks the ticket",
+      body: "The owner reads the To Do tickets in Sprint 1, settles what is wanted during Elaboration, and moves the ticket to In Progress. Nothing in the office starts until he makes that move.",
+      col: 2, hops: [1, 2], mr: "empty", board: ["In Progress", "Moved by the owner"], mrText: ["None yet", ""], list: ["Not listed yet", ""],
+      actors: ["owner", "board"], legs: [] },
+
+    { title: "The manager puts it on the list",
+      body: "The manager watches the sprint for the owner’s tickets that are In Progress. It leaves epics alone, adds this ticket to its task list, and gives it to the developer.",
+      col: 2, mr: "empty", board: ["In Progress", ""], mrText: ["None yet", ""], list: ["With the developer", "Just assigned"],
+      actors: ["manager", "developer", "board"],
+      legs: [
+        { r: "r_dev_mgr", d: -1, a: "manager", b: "developer", k: "msg", h: "Manager to Developer", say: "New ticket. Start work." }
+      ] },
+
+    { title: "The developer works out what done means",
+      body: "The developer reads the ticket, its comments and its linked tickets. Then it writes a short brief: the acceptance criteria, the files to change and how the change will be tested.",
+      col: 2, mr: "empty", board: ["In Progress", ""], mrText: ["None yet", ""], list: ["With the developer", "Gathering requirements"],
+      actors: ["developer", "board"], legs: [] },
+
+    { title: "A question goes up to the owner", tag: "Only when needed",
+      body: "When something is unclear, the developer stops and reports a blocker. The manager takes the question to the owner, who answers it or raises it with the other team. The answer comes back the same way, and the manager writes it on the ticket so the reviewer can check against it.",
+      col: 2, mr: "empty", board: ["In Progress", ""], mrText: ["None yet", ""], list: ["Blocked", "Waiting for the owner"],
+      actors: ["developer", "manager", "owner"],
+      legs: [
+        { r: "r_dev_mgr", d: 1, a: "developer", b: "manager", k: "msg", h: "Developer to Manager", say: "Blocked. I need a decision." },
+        { r: "r_owner_mgr", d: -1, a: "manager", b: "owner", k: "msg", h: "Manager to the owner", say: "The developer needs your answer." },
+        { r: "r_owner_mgr", d: 1, a: "owner", b: "manager", k: "msg", h: "The owner to Manager", say: "Here is the decision." },
+        { r: "r_dev_mgr", d: -1, a: "manager", b: "developer", k: "msg", h: "Manager to Developer", say: "Unblocked. Carry on." }
+      ] },
+
+    { title: "The developer builds and tests",
+      body: "The work happens on a branch named after the ticket. The developer runs the project’s own tests, runs the checks the ticket names, and updates the docs that describe the change.",
+      col: 2, mr: "empty", board: ["In Progress", ""], mrText: ["None yet", ""], list: ["With the developer", "Building and testing"],
+      actors: ["developer", "bench"],
+      legs: [
+        { r: "r_dev_bench", d: 1, a: "developer", b: "bench", k: "work", h: "Developer, at the test bench", say: "Runs the tests, then the checks the ticket names." }
+      ] },
+
+    { title: "The co-author reads it first",
+      body: "A co-author with a clean context reviews the local change against the ticket, before any merge request exists. The developer fixes what it finds, so the first round of problems never reaches the reviewer.",
+      col: 2, mr: "empty", board: ["In Progress", ""], mrText: ["None yet", ""], list: ["With the developer", "First review at the desk"],
+      actors: ["developer", "coauthor"],
+      legs: [
+        { r: "r_dev_co", d: 1, a: "developer", b: "coauthor", k: "work", h: "Developer to Co-author", say: "Here is the local change." },
+        { r: "r_dev_co", d: -1, a: "coauthor", b: "developer", k: "work", h: "Co-author to Developer", say: "These are the findings to fix." }
+      ] },
+
+    { title: "The merge request opens",
+      body: "The developer opens the merge request and moves the ticket to Completed, the board’s name for ready for review. It reports to the manager. The manager passes the message on, because the developer has no line to the reviewer.",
+      col: 3, mr: "open", board: ["Completed", "Moved by the developer"], mrText: ["Open", "Waiting for review"], list: ["With the reviewer", "Review requested"],
+      actors: ["developer", "manager", "reviewer", "mr", "board"],
+      legs: [
+        { r: "r_dev_mr", d: 1, a: "developer", b: "mr", k: "work", mr: "open", h: "Developer, at the MR hatch", say: "Opens the merge request." },
+        { r: "r_dev_mgr", d: 1, a: "developer", b: "manager", k: "msg", h: "Developer to Manager", say: "Ready for review." },
+        { r: "r_rev_mgr", d: -1, a: "manager", b: "reviewer", k: "msg", h: "Manager to Reviewer", say: "Please review this merge request." }
+      ] },
+
+    { title: "The reviewer posts threads",
+      body: "The reviewer runs in its own session with a clean context, and with the Jira ticket open beside the change. It looks closely and makes sure the merge request maps exactly to the ticket, with every requirement and every decision matching. It posts each mismatch or finding as a thread, and reports to the manager, who tells the developer.",
+      col: 3, mr: "threads", board: ["Completed", ""], mrText: ["Open", "Threads waiting for the developer"], list: ["With the developer", "Threads to fix"],
+      actors: ["reviewer", "manager", "developer", "mr", "file"],
+      legs: [
+        { r: "r_rev_file", d: 1, a: "reviewer", b: "file", k: "work", h: "Reviewer, at the ticket file", say: "Reads every requirement and decision on the ticket." },
+        { r: "r_rev_mr", d: 1, a: "reviewer", b: "mr", k: "work", mr: "threads", h: "Reviewer, at the MR hatch", say: "Posts each mismatch or finding as a thread." },
+        { r: "r_rev_mgr", d: 1, a: "reviewer", b: "manager", k: "msg", h: "Reviewer to Manager", say: "Threads are posted." },
+        { r: "r_dev_mgr", d: -1, a: "manager", b: "developer", k: "msg", h: "Manager to Developer", say: "There are threads to fix." }
+      ] },
+
+    { title: "Fixes go back through the manager", tag: "Repeats until no thread is open",
+      body: "The developer fixes each thread, pushes, and replies with what changed. It never closes a thread. The manager asks the reviewer to look again. The reviewer checks every fix against the code and resolves only what it has verified. A comment from a person travels the same way.",
+      col: 3, mr: "resolved", board: ["Completed", ""], mrText: ["Open", "Threads resolved by the reviewer"], list: ["With the reviewer", "Checking the fixes"],
+      actors: ["developer", "manager", "reviewer", "mr"],
+      legs: [
+        { r: "r_dev_mr", d: 1, a: "developer", b: "mr", k: "work", h: "Developer, at the MR hatch", say: "Pushes the fixes and replies on each thread." },
+        { r: "r_dev_mgr", d: 1, a: "developer", b: "manager", k: "msg", h: "Developer to Manager", say: "Fixed. The replies are on the threads." },
+        { r: "r_rev_mgr", d: -1, a: "manager", b: "reviewer", k: "msg", h: "Manager to Reviewer", say: "Please check the fixes." },
+        { r: "r_rev_mr", d: 1, a: "reviewer", b: "mr", k: "work", mr: "resolved", h: "Reviewer, at the MR hatch", say: "Verifies each fix and resolves the thread." }
+      ] },
+
+    { title: "The reviewer approves",
+      body: "With every thread resolved and the merge request matching the ticket exactly, the reviewer approves it, and that approval counts toward the merge. Both agents report in. The reviewer says approved. The developer says the story is final from its side.",
+      col: 3, mr: "approved", board: ["Completed", ""], mrText: ["Approved", "By the reviewer"], list: ["Approved", "The manager is checking"],
+      actors: ["reviewer", "manager", "developer", "mr"],
+      legs: [
+        { r: "r_rev_mr", d: 1, a: "reviewer", b: "mr", k: "work", mr: "approved", h: "Reviewer, at the MR hatch", say: "Approves the merge request." },
+        { r: "r_rev_mgr", d: 1, a: "reviewer", b: "manager", k: "msg", h: "Reviewer to Manager", say: "Approved." },
+        { r: "r_dev_mgr", d: 1, a: "developer", b: "manager", k: "msg", h: "Developer to Manager", say: "The story is final from my side." }
+      ] },
+
+    { title: "The manager checks for itself", checks: true,
+      body: "Before a person is asked for anything, the manager looks at the merge request directly. It must be approved, its pipeline must have passed, and it must be marked ready. Then the manager moves the ticket to Reviewed, assigns the merge request to the maintainer and starts the next ticket.",
+      col: 4, mr: "approved", board: ["Reviewed", "Moved by the manager"], mrText: ["Approved", "Pipeline passed, marked ready"], list: ["Waiting for the maintainer", "Next ticket can start"],
+      actors: ["manager", "merger", "mr", "board"],
+      legs: [
+        { r: "r_merger_mgr", d: -1, a: "manager", b: "merger", k: "msg", h: "Manager to the maintainer", say: "Approved and green. It is assigned to you for merge." }
+      ] },
+
+    { title: "The maintainer merges",
+      body: "The maintainer merges the request into staging. The merge stays with a person. If he or anyone else comments first, the manager passes it to the developer, whose session is still open.",
+      col: 4, mr: "merged", board: ["Reviewed", ""], mrText: ["Merged", "Into staging"], list: ["Merged", "Waiting for the manager to close it"],
+      actors: ["merger", "mr", "staging"],
+      legs: [
+        { r: "r_merge_staging", d: 1, a: "merger", b: "staging", k: "work", mr: "merged", h: "The maintainer, at the staging door", say: "Merges the request into staging." }
+      ] },
+
+    { title: "The ticket lands on staging",
+      body: "Merged into staging is deployed to staging. The manager sees the merge, moves the ticket to Deployed to Staging, reports to the owner and closes the developer’s session. QA on staging then checks for drift in columns and records.",
+      col: 5, mr: "merged", board: ["Deployed to Staging", "Moved by the manager"], mrText: ["Merged", "Into staging"], list: ["Closed", "Developer session ended"],
+      actors: ["manager", "owner", "board", "staging"],
+      legs: [
+        { r: "r_owner_mgr", d: -1, a: "manager", b: "owner", k: "msg", h: "Manager to the owner", say: "It is merged and on staging." }
+      ] }
+  ];
+  const LAST = STEPS.length - 1;
+
+  const el = {
+    count: $("#count"), tag: $("#tag"), title: $("#s-title"), body: $("#s-body"),
+    legs: $("#legs"), checks: $("#checks"),
+    roBoard: $("#ro-board"), roMr: $("#ro-mr"), roList: $("#ro-list"),
+    prev: $("#prev"), next: $("#next"), replay: $("#replay"), scale: $("#scale"),
+    ticket: $("#ticket"), slips: $("#slips"), hatch: $("#hatch"), hatchState: $("#hatch-state"),
+    boardScroll: $("#boardScroll"), pop: $("#pop"), wrap: $("#planWrap"), fs: $("#fs")
+  };
+  let cur = 0;
+  let run = 0;
+
+  // the scale bar doubles as the step rail
+  STEPS.forEach((s, i) => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "seg";
+    b.title = i ? i + ". " + s.title : "Overview";
+    b.setAttribute("aria-label", i ? "Step " + i + ": " + s.title : "Overview");
+    b.innerHTML = "<i></i><span>" + i + "</span>";
+    b.addEventListener("click", () => render(i, true));
+    li.appendChild(b);
+    el.scale.appendChild(li);
+  });
+  const segs = $$(".seg");
+
+  function setCol(c) {
+    el.ticket.style.setProperty("--col", c);
+    $$("#cols li").forEach((li, i) => { li.classList.toggle("now", i === c); });
+    $$(".cell").forEach((r, i) => { r.classList.toggle("now", i === c); r.classList.toggle("past", i < c); });
+    const sc = el.boardScroll;
+    if (sc.scrollWidth > sc.clientWidth + 4) {
+      const w = sc.scrollWidth / 7;
+      const left = Math.max(0, w * c - (sc.clientWidth - w) / 2);
+      if (sc.scrollTo) sc.scrollTo({ left: left, behavior: reduce ? "auto" : "smooth" }); else sc.scrollLeft = left;
+    }
+  }
+
+  function setHatch(state) {
+    el.hatch.dataset.state = state;
+    el.hatchState.textContent = MR_LABEL[state];
+  }
+
+  function speak(id) {
+    $$("[data-mk]").forEach(n => n.classList.toggle("is-speaking", n.dataset.mk === id));
+  }
+
+  function slipNode(kind) {
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "slip");
+    const add = (tag, attrs) => {
+      const n = document.createElementNS(NS, tag);
+      Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+      g.appendChild(n);
+    };
+    if (kind === "work") {
+      add("rect", { x: -8, y: -10.5, width: 16, height: 21, rx: 1.5 });
+      add("path", { d: "M-4 -4.5H4M-4 0H4M-4 4.5H1" });
+    } else {
+      add("rect", { x: -13, y: -9, width: 26, height: 18, rx: 2 });
+      add("path", { d: "M-13 -9L0 1.5L13 -9" });
+    }
+    return g;
+  }
+
+  function travel(leg, token) {
+    return new Promise(resolve => {
+      const p = document.getElementById(leg.r);
+      if (!p) { resolve(); return; }
+      p.classList.add("live");
+      p.classList.toggle("rev", leg.d < 0);
+      if (reduce) {
+        if (leg.mr) setHatch(leg.mr);
+        setTimeout(resolve, 300);
+        return;
+      }
+      const len = p.getTotalLength();
+      const dur = Math.min(1700, Math.max(750, len * 3.4));
+      const g = slipNode(leg.k);
+      el.slips.appendChild(g);
+      const t0 = performance.now();
+      const frame = now => {
+        if (token !== run) { g.remove(); resolve(); return; }
+        const t = Math.min(1, Math.max(0, (now - t0) / dur));
+        const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const pt = p.getPointAtLength((leg.d < 0 ? 1 - e : e) * len);
+        g.setAttribute("transform", "translate(" + pt.x.toFixed(1) + " " + pt.y.toFixed(1) + ")");
+        if (t < 1) { requestAnimationFrame(frame); return; }
+        if (leg.mr) setHatch(leg.mr);
+        g.classList.add("gone");
+        setTimeout(() => g.remove(), 280);
+        resolve();
+      };
+      frame(t0);
+    });
+  }
+
+  async function play(step, token) {
+    const legs = step.legs || [];
+    const rows = $$("#legs li");
+    if (!legs.length) { speak(step.actors[0] || null); return; }
+    for (let i = 0; i < legs.length; i++) {
+      if (token !== run) return;
+      rows.forEach((li, j) => li.classList.toggle("now", j === i));
+      speak(legs[i].a);
+      await travel(legs[i], token);
+      if (token !== run) return;
+      speak(legs[i].b);
+      await wait(reduce ? 0 : 340);
+    }
+    if (token !== run) return;
+    rows.forEach(li => li.classList.remove("now"));
+  }
+
+  function moveTicket(step, token, animate) {
+    if (animate && step.hops && !reduce) {
+      let i = 0;
+      const hop = () => {
+        if (token !== run) return;
+        setCol(step.hops[i]);
+        i += 1;
+        if (i < step.hops.length) setTimeout(hop, 800);
+      };
+      hop();
+    } else {
+      setCol(step.col);
+    }
+  }
+
+  function readout(node, pair) {
+    node.textContent = pair[0];
+    const s = document.createElement("small");
+    s.textContent = pair[1] || "";
+    node.appendChild(s);
+  }
+
+  function render(i, animate) {
+    const token = ++run;
+    cur = i;
+    const s = STEPS[i];
+
+    $$(".route").forEach(p => p.classList.remove("live", "rev"));
+    el.slips.replaceChildren();
+
+    const num = (i < 10 ? "0" : "") + i;
+    el.count.innerHTML = "<b>" + num + "</b>" + (i === 0 ? "Overview" : "Step " + i + " of " + LAST);
+    el.tag.hidden = !s.tag;
+    el.tag.textContent = s.tag || "";
+    el.title.textContent = s.title;
+    el.body.textContent = s.body;
+
+    el.legs.replaceChildren(...(s.legs || []).map((leg, j) => {
+      const li = document.createElement("li");
+      const ix = document.createElement("span"); ix.className = "ix"; ix.textContent = String.fromCharCode(97 + j);
+      const head = document.createElement("span"); head.className = "head"; head.textContent = leg.h;
+      const say = document.createElement("span"); say.className = "say"; say.textContent = leg.say;
+      li.append(ix, head, say);
+      return li;
+    }));
+    el.legs.hidden = !(s.legs && s.legs.length);
+    el.checks.hidden = !s.checks;
+
+    readout(el.roBoard, s.board);
+    readout(el.roMr, s.mrText);
+    readout(el.roList, s.list);
+
+    el.prev.disabled = i === 0;
+    el.next.disabled = i === LAST;
+    segs.forEach((b, j) => {
+      b.classList.toggle("done", j < i);
+      b.classList.toggle("now", j === i);
+      if (j === i) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+    });
+
+    $$("[data-role]").forEach(n => n.classList.toggle("is-active", s.actors.indexOf(n.dataset.role) !== -1));
+    $$("[data-mk]").forEach(n => n.classList.toggle("is-active", s.actors.indexOf(n.dataset.mk) !== -1));
+    $$("[data-lab]").forEach(n => n.classList.toggle("is-active", s.actors.indexOf(n.dataset.lab) !== -1));
+    speak(null);
+
+    moveTicket(s, token, animate);
+    const changesMr = (s.legs || []).some(l => l.mr);
+    setHatch(animate && changesMr && !reduce && i > 0 ? STEPS[i - 1].mr : s.mr);
+
+    if (animate) play(s, token); else speak(s.actors[0] || null);
+  }
+
+  function go(i) {
+    const n = Math.max(0, Math.min(LAST, i));
+    if (n === cur) return false;
+    render(n, true);
+    return true;
+  }
+
+  el.prev.addEventListener("click", () => go(cur - 1));
+  el.next.addEventListener("click", () => go(cur + 1));
+  el.replay.addEventListener("click", () => render(cur, true));
+
+  document.addEventListener("keydown", e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    let moved = false;
+    if (e.key === "ArrowRight" || e.key === "PageDown") moved = go(cur + 1);
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") moved = go(cur - 1);
+    if (moved) e.preventDefault();
+  });
+
+  // role cards: hover, focus or tap a room
+  function showPop(node) {
+    const src = document.getElementById("role-" + node.dataset.role);
+    if (!src) return;
+    el.pop.innerHTML = src.innerHTML;
+    el.pop.hidden = false;
+    if (window.matchMedia && window.matchMedia("(max-width: 720px)").matches) {
+      el.pop.style.left = "";
+      el.pop.style.top = "";
+      return;
+    }
+    const w = el.wrap.getBoundingClientRect();
+    const r = node.getBoundingClientRect();
+    const pw = el.pop.offsetWidth;
+    const ph = el.pop.offsetHeight;
+    const gap = 14;
+    const roomRight = w.right - r.right;
+    const roomLeft = r.left - w.left;
+    let x = roomRight >= roomLeft ? r.right - w.left + gap : r.left - w.left - gap - pw;
+    x = Math.max(8, Math.min(x, w.width - pw - 8));
+    let y = r.top - w.top + (r.height - ph) / 2;
+    y = Math.max(8, Math.min(y, w.height - ph - 8));
+    el.pop.style.left = x + "px";
+    el.pop.style.top = Math.max(8, y) + "px";
+  }
+  function hidePop() { el.pop.hidden = true; }
+
+  $$(".hit").forEach(n => {
+    n.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") showPop(n); });
+    n.addEventListener("pointerleave", e => { if (e.pointerType !== "touch") hidePop(); });
+    n.addEventListener("focus", () => showPop(n));
+    n.addEventListener("blur", hidePop);
+    n.addEventListener("click", e => { showPop(n); e.stopPropagation(); });
+    n.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { showPop(n); e.preventDefault(); }
+      if (e.key === "Escape") hidePop();
+    });
+  });
+  document.addEventListener("click", hidePop);
+
+  // full screen is optional; hide the button where the frame refuses it
+  if (!document.fullscreenEnabled) {
+    el.fs.hidden = true;
+  } else {
+    el.fs.addEventListener("click", () => {
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+      } else {
+        const req = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+        if (req && req.catch) req.catch(() => {});
+      }
+    });
+    document.addEventListener("fullscreenchange", () => {
+      el.fs.textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";
+    });
+  }
+
+  const m = /^#step-(\d{1,2})$/.exec(window.location.hash || "");
+  render(m ? Math.min(LAST, parseInt(m[1], 10)) : 0, false);
+})();
+</script>
+</body>
+</html>

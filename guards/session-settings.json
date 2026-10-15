@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "deny": [
+      "Edit(//path/to/release-office/**)",
+      "Edit(~/.claude/**)",
+      "Read(~/.release-office/env)",
+      "Edit(~/.release-office/env)",
+      "WebFetch",
+      "WebSearch"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /path/to/release-office/guards/guard.py",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}
